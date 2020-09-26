@@ -23,7 +23,7 @@ namespace RandImg
         private FileController fc;
         private System.Windows.Forms.Timer timer;
         private int timerDur = 5000;
-        public DisplayImage(List<string> in_basePaths)
+        public DisplayImage(List<string> in_basePaths, string searchPattern = "", string excludePattern = "")
         {
             InitializeComponent();
             WindowStyle = WindowStyle.None; // no border
@@ -36,6 +36,17 @@ namespace RandImg
             timer.Tick += new EventHandler(TimerStart);
 
             ChooseNew(true); // init image
+        }
+
+        public DisplayImage(List<string> in_basePaths, double left, double top, double width, double height, string searchPattern = "", string excludePattern = "")
+            : this(in_basePaths, searchPattern, excludePattern)
+        {
+            WindowState = WindowState.Normal; // normal
+            Left = left;
+            Top = top;
+            Width = width;
+            Height = height;
+            Topmost = true;
         }
 
         protected override void OnKeyDown(System.Windows.Input.KeyEventArgs e)
@@ -57,6 +68,17 @@ namespace RandImg
             if (e.Key == Key.Space)
             {
                 timer.Enabled = !timer.Enabled;
+            }
+            if (e.Key == Key.B)
+            {
+                if (WindowStyle == WindowStyle.None)
+                {
+                    WindowStyle = WindowStyle.SingleBorderWindow;
+                }
+                else
+                {
+                    WindowStyle = WindowStyle.None;
+                }
             }
         }
 

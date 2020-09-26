@@ -22,9 +22,9 @@ namespace RandImg
     /// </summary>
     public partial class MainWindow : Window
     {
-        private DisplayImage dispImg = null; // main image display
         private List<string> basePathStrings = new List<string>
-        { "C:/Users/alexobatake/source/repos/RandImg/Images/",
+        { 
+            "C:/Users/alexobatake/source/repos/RandImg/Images/",
             "C:/Users/alexobatake/source/repos/RandImg/ImagesCopy/",
             "F:\\bup\\Win Backups\\12-28-18\\New folder\\小鸟酱30G\\"
         }; // default paths to search
@@ -38,11 +38,18 @@ namespace RandImg
 
         private void Start_Click(object sender, RoutedEventArgs e)
         {
-            if (dispImg == null || !dispImg.IsLoaded)
+            if ((bool)fullScreenRB.IsChecked)
             {
-                dispImg = new DisplayImage(basePathStrings);
+                DisplayImage dispImg = new DisplayImage(basePathStrings, searchPatternTB.Text, excludePatternTB.Text);
+                dispImg.Show();
             }
-            dispImg.Show();
+            else if ((bool)resizeRB.IsChecked)
+            {
+                ResizeWindow resize = new ResizeWindow(basePathStrings, searchPatternTB.Text, excludePatternTB.Text);
+                resize.Show();
+            }
+            WindowState = WindowState.Minimized;
+
         }
 
         private void DirSelect_Click(object sender, RoutedEventArgs e)
