@@ -95,7 +95,7 @@ namespace RandImg
 
         private class Directory
         {
-            const int EMPTY_DIR = -1; // sentinal marker value for empty directories in fileMatchTree
+            const int EMPTY_DIR = -2; // sentinal marker value for empty directories in fileMatchTree, -2 since empty index = -1
             public string basePath { get; }
             public int numMatch { get; }
             private Func<string, bool> isValid;
@@ -114,6 +114,7 @@ namespace RandImg
             {
                 //try
                 {
+                    fileNum = 3559;
                     return GetImgPath(fileNum, basePath, 0, TreeSearch(fileMatchTree, fileNum));
                 }
                 //catch (Exception e)
@@ -227,11 +228,11 @@ namespace RandImg
                         threshold = tree[i];
                         dir++;
                     }
-                    else if (tree[i] == EMPTY_DIR) // if value = sentinal value for empty directory
+                    // tree[i-1] == threshold ensures that 
+                    else if (tree[i] == EMPTY_DIR && tree[i-1] == threshold) // if value = sentinal value for empty directory
                     {
                         dir++;
                     }
-                    // uncaught empty directories would not increment the directory number
                 }
 
                 Debug.Assert(true);

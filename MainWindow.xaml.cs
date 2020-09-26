@@ -23,7 +23,11 @@ namespace RandImg
     public partial class MainWindow : Window
     {
         private DisplayImage testImg = null;
-        private List<string> basePathStrings = new List<string>{ "C:/Users/alexobatake/source/repos/RandImg/Images/", "C:/Users/alexobatake/source/repos/RandImg/ImagesCopy/" };
+        private List<string> basePathStrings = new List<string>
+        { "C:/Users/alexobatake/source/repos/RandImg/Images/",
+            "C:/Users/alexobatake/source/repos/RandImg/ImagesCopy/",
+            "F:\\bup\\Win Backups\\12-28-18\\New folder\\小鸟酱30G\\"
+        };
 
         public MainWindow()
         {
