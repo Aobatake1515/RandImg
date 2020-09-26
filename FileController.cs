@@ -244,14 +244,14 @@ namespace RandImg
             private static List<int> TreeSearch(List<int> tree, int target, int index = 0, int depth = 0)
             {
                 // check if file is in files of this dir
-                if (target <= tree[index])
+                if (target < tree[index] && tree[index] > 0)
                 {
                     return new List<int> { 0 }; // 0 indicates files in this dir
                 }
                 for (int i = index + 1, dir = 1, threshold = 0; i < tree.Count; i++) // loop through dirs in this dir
                 {
                     // check if the tree target is in this dir
-                    if (target <= tree[i])
+                    if (target < tree[i])
                     {
                         var retVal = TreeSearch(tree, target, i + 1, depth + 1); // save directions for inside dir
                         retVal.Insert(0, dir); // front add

@@ -7,9 +7,12 @@
         mc:Ignorable="d"
         Title="Rand Img" Height="450" Width="800">
     <Grid>
-        <Button x:Name="button" Content="Button" HorizontalAlignment="Left" Margin="85,234,0,0" VerticalAlignment="Top" Width="75" Click="button_Click"/>
-        <Button x:Name="DirSelect" Content="Button" HorizontalAlignment="Left" VerticalAlignment="Top" Width="75" Margin="85,182,0,0" Click="DirSelect_Click"/>
-        <Label x:Name="basePath" Content="Label" HorizontalAlignment="Left" Margin="85,287,0,0" VerticalAlignment="Top" Width="640" Height="68"/>
+        <Button x:Name="button" Content="Button" HorizontalAlignment="Left" Margin="356,102,0,0" VerticalAlignment="Top" Width="75" Click="button_Click"/>
+        <Button x:Name="DirSelect" Content="Button" HorizontalAlignment="Left" VerticalAlignment="Top" Width="75" Margin="107,368,0,0" Click="DirSelect_Click"/>
+        <ListBox x:Name="basePathsLB" HorizontalAlignment="Left" Height="79" Margin="107,284,0,0" VerticalAlignment="Top" Width="606">
+            <ListBoxItem Content="TestDirectory/TestFile.png"/>
+        </ListBox>
+        <Button x:Name="DirRemove" Content="Button" HorizontalAlignment="Left" VerticalAlignment="Top" Width="75" Margin="211,368,0,0" Click="DirRemove_Click"/>
 
     </Grid>
 </Window>

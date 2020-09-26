@@ -47,10 +47,12 @@ namespace RandImg
             if (e.Key == Key.Right)
             {
                 ChooseNew(true);
+                ResetTimer();
             }
             if (e.Key == Key.Left)
             {
                 ChooseNew(false);
+                ResetTimer();
             }
             if (e.Key == Key.Space)
             {
@@ -61,6 +63,12 @@ namespace RandImg
         protected void TimerStart(object Sender, EventArgs e)
         {
             ChooseNew(true);
+        }
+
+        private void ResetTimer()
+        {
+            timer.Enabled = !timer.Enabled;
+            timer.Enabled = !timer.Enabled;
         }
 
         /// <summary>

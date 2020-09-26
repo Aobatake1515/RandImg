@@ -32,7 +32,8 @@ namespace RandImg
         public MainWindow()
         {
             InitializeComponent();
-            basePath.Content = GetPathsString();
+            basePathsLB.SelectionMode = System.Windows.Controls.SelectionMode.Single;
+            RefreshListbox();
         }
 
         private void button_Click(object sender, RoutedEventArgs e)
@@ -51,8 +52,14 @@ namespace RandImg
             if (result == System.Windows.Forms.DialogResult.OK)
             {
                 basePathStrings.Add(folderBrowserDialog.SelectedPath);
-                basePath.Content = GetPathsString();
+                RefreshListbox();
             }
+        }
+
+        private void DirRemove_Click(object sender, RoutedEventArgs e)
+        {
+            basePathStrings.RemoveAt(basePathsLB.SelectedIndex);
+            RefreshListbox();
         }
 
         private string GetPathsString()
@@ -68,6 +75,17 @@ namespace RandImg
 
             }
             return retVal;
+        }
+
+        private void RefreshListbox()
+        {
+            basePathsLB.BeginInit();
+            basePathsLB.Items.Clear();
+            foreach (string s in basePathStrings)
+            {
+                basePathsLB.Items.Add(s);
+            }
+            basePathsLB.EndInit();
         }
     }
 }
