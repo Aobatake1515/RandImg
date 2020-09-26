@@ -36,7 +36,7 @@ namespace RandImg
             RefreshListbox();
         }
 
-        private void button_Click(object sender, RoutedEventArgs e)
+        private void Start_Click(object sender, RoutedEventArgs e)
         {
             if (dispImg == null || !dispImg.IsLoaded)
             {
@@ -86,6 +86,21 @@ namespace RandImg
                 basePathsLB.Items.Add(s);
             }
             basePathsLB.EndInit();
+        }
+
+        private void textBox_TextChanged(object sender, TextChangedEventArgs e)
+        {
+
+        }
+
+        private void fullScreenRB_Checked(object sender, RoutedEventArgs e)
+        {
+
+        }
+
+        private void resizeRB_Checked(object sender, RoutedEventArgs e)
+        {
+
         }
     }
 }

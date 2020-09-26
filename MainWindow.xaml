@@ -7,12 +7,21 @@
         mc:Ignorable="d"
         Title="Rand Img" Height="450" Width="800">
     <Grid>
-        <Button x:Name="button" Content="Button" HorizontalAlignment="Left" Margin="356,102,0,0" VerticalAlignment="Top" Width="75" Click="button_Click"/>
-        <Button x:Name="DirSelect" Content="Button" HorizontalAlignment="Left" VerticalAlignment="Top" Width="75" Margin="107,368,0,0" Click="DirSelect_Click"/>
-        <ListBox x:Name="basePathsLB" HorizontalAlignment="Left" Height="79" Margin="107,284,0,0" VerticalAlignment="Top" Width="606">
+        <GroupBox x:Name="groupBox" Header="Window Type" HorizontalAlignment="Left" Height="75" Margin="43,116,0,0" VerticalAlignment="Top" Width="148"/>
+        <Button x:Name="start" Content="Start!" HorizontalAlignment="Left" Margin="510,163,0,0" VerticalAlignment="Top" Width="230" Click="Start_Click" Height="89" FontSize="36" FontFamily="Yu Gothic UI Semibold"/>
+        <Button x:Name="DirSelect" Content="Add" HorizontalAlignment="Left" VerticalAlignment="Top" Width="75" Margin="43,368,0,0" Click="DirSelect_Click"/>
+        <Button x:Name="DirRemove" Content="Remove" HorizontalAlignment="Left" VerticalAlignment="Top" Width="75" Margin="147,368,0,0" Click="DirRemove_Click"/>
+        <ListBox x:Name="basePathsLB" HorizontalAlignment="Left" Height="79" Margin="43,284,0,0" VerticalAlignment="Top" Width="697">
             <ListBoxItem Content="TestDirectory/TestFile.png"/>
         </ListBox>
-        <Button x:Name="DirRemove" Content="Button" HorizontalAlignment="Left" VerticalAlignment="Top" Width="75" Margin="211,368,0,0" Click="DirRemove_Click"/>
+        <RadioButton x:Name="fullScreenRB" Content="Fullscreen" HorizontalAlignment="Left" Margin="58,143,0,0" VerticalAlignment="Top" Checked="fullScreenRB_Checked" IsChecked="True"/>
+        <RadioButton x:Name="resizeRB" Content="Resizable" HorizontalAlignment="Left" Margin="58,163,0,0" VerticalAlignment="Top" Checked="resizeRB_Checked"/>
+        <TextBox x:Name="PatternTemplateTB" HorizontalAlignment="Left" Height="24" Margin="43,226,0,0" TextWrapping="Wrap" Text="TextBox" VerticalAlignment="Top" Width="148" TextChanged="textBox_TextChanged"/>
+        <Label x:Name="dirsLbl" Content="Directories to Search" HorizontalAlignment="Left" Margin="43,258,0,0" VerticalAlignment="Top" Width="148"/>
+        <Label x:Name="dirsLbl_Copy" Content="Search Pattern" HorizontalAlignment="Left" Margin="43,200,0,0" VerticalAlignment="Top" Width="148"/>
+        <TextBox x:Name="PatternTemplateTB_Copy" HorizontalAlignment="Left" Height="24" Margin="196,226,0,0" TextWrapping="Wrap" Text="TextBox" VerticalAlignment="Top" Width="148" TextChanged="textBox_TextChanged"/>
+        <Label x:Name="dirsLbl_Copy1" Content="Exclusion Pattern" HorizontalAlignment="Left" Margin="196,200,0,0" VerticalAlignment="Top" Width="148"/>
+        <Label x:Name="label" Content="Rand Img Image Gallery" HorizontalAlignment="Left" Margin="184,10,0,0" VerticalAlignment="Top" Width="482" FontSize="36" FontFamily="Yu Gothic UI Semibold"/>
 
     </Grid>
 </Window>
