@@ -22,12 +22,12 @@ namespace RandImg
     /// </summary>
     public partial class MainWindow : Window
     {
-        private DisplayImage testImg = null;
+        private DisplayImage dispImg = null; // main image display
         private List<string> basePathStrings = new List<string>
         { "C:/Users/alexobatake/source/repos/RandImg/Images/",
             "C:/Users/alexobatake/source/repos/RandImg/ImagesCopy/",
             "F:\\bup\\Win Backups\\12-28-18\\New folder\\小鸟酱30G\\"
-        };
+        }; // default paths to search
 
         public MainWindow()
         {
@@ -37,11 +37,11 @@ namespace RandImg
 
         private void button_Click(object sender, RoutedEventArgs e)
         {
-            if (testImg == null || !testImg.IsLoaded)
+            if (dispImg == null || !dispImg.IsLoaded)
             {
-                testImg = new DisplayImage(basePathStrings);
+                dispImg = new DisplayImage(basePathStrings);
             }
-            testImg.Show();
+            dispImg.Show();
         }
 
         private void DirSelect_Click(object sender, RoutedEventArgs e)

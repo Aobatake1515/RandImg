@@ -20,25 +20,15 @@ namespace RandImg
     /// </summary>
     public partial class DisplayImage : Window
     {
-        //private string[] pics;
-        //private int currentPic = 0;
-        //private string basePath;
-        //private Uri baseUri;
         private FileController fc;
         public DisplayImage(List<string> in_basePaths)
         {
             InitializeComponent();
-            FillImage();
-            WindowStyle = WindowStyle.None;
-            WindowState = WindowState.Maximized;
-
-            //basePath = in_basePath;
-            //baseUri = new Uri(basePath);
-
-            //pics = System.IO.Directory.GetFiles(basePath);
+            WindowStyle = WindowStyle.None; // no border
+            WindowState = WindowState.Maximized; // fullscreen
 
             fc = new FileController(in_basePaths);
-            ChooseNew(true);
+            ChooseNew(true); // init image
         }
 
         protected override void OnKeyDown(System.Windows.Input.KeyEventArgs e)
@@ -58,7 +48,9 @@ namespace RandImg
             }
         }
 
-
+        /// <summary>
+        /// fill images to screen size
+        /// </summary>
         protected void FillImage()
         {
             image.Width = Width;
@@ -67,6 +59,10 @@ namespace RandImg
             imageBack.Height = Height;
         }
 
+        /// <summary>
+        /// set new image based on Uri
+        /// </summary>
+        /// <param name="uri">Uri for image</param>
         protected void NewImage(Uri uri)
         {
             FillImage();
