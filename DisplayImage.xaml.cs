@@ -56,16 +56,6 @@ namespace RandImg
             {
                 ChooseNew(false);
             }
-            if (e.Key == Key.Space)
-            {
-                Size size = this.RenderSize;
-                System.Windows.Forms.Screen screen = System.Windows.Forms.Screen.AllScreens.First<System.Windows.Forms.Screen>();
-                string s1 = string.Format("Width: {0:f4} Height: {1:f4}", image.Width, image.Height);
-                string s2 = string.Format("Width: {0:f4} Height: {1:f4}", image.ActualWidth, image.ActualHeight);
-                //string s2 = string.Format("Width: {0:d} Height: {1:d}", screen.WorkingArea.Width, screen.WorkingArea.Height);
-                string s3 = string.Format("Width: {0:f4} Height: {1:f4}", size.Width, size.Height);
-                MessageBox.Show(string.Format("{0}\n{1}\n{2}\n", s1, s2, s3));
-            }
         }
 
 

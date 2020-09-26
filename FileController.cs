@@ -95,7 +95,7 @@ namespace RandImg
 
         private class Directory
         {
-            const int EMPTY_DIR = -2; // sentinal marker value for empty directories in fileMatchTree, -2 since empty index = -1
+            //const int EMPTY_DIR = -2; // sentinal marker value for empty directories in fileMatchTree, -2 since empty index = -1
             public string basePath { get; }
             public int numMatch { get; }
             private Func<string, bool> isValid;
@@ -114,7 +114,7 @@ namespace RandImg
             {
                 //try
                 {
-                    fileNum = 3559;
+                    // fileNum = 3559;
                     return GetImgPath(fileNum, basePath, 0, TreeSearch(fileMatchTree, fileNum));
                 }
                 //catch (Exception e)
@@ -125,7 +125,11 @@ namespace RandImg
             }
             public string GetImgPath(int fileNum, string currentPath, int index, List<int> pathToFile)
             {
-                if (fileNum >= numMatch) return null;
+                if (fileNum >= numMatch)
+                {
+                    Debug.Assert(false);
+                    return null;
+                }
 
                 if (pathToFile[index] == 0)
                 {
@@ -135,7 +139,11 @@ namespace RandImg
                     {
                         if (isValid(s)) validPaths.Add(s);
                     }
-                    if (filePaths.Length == 0) return null;
+                    if (filePaths.Length == 0)
+                    {
+                        Debug.Assert(false);
+                        return null;
+                    }
                     return validPaths[fileNum % validPaths.Count];
                 }
                 else if (pathToFile[index] > 0)
@@ -143,6 +151,7 @@ namespace RandImg
                     string[] dirPaths = System.IO.Directory.GetDirectories(currentPath);
                     return GetImgPath(fileNum, dirPaths[pathToFile[index] - 1], index + 1, pathToFile);
                 }
+                Debug.Assert(false);
                 return null;
             }
 
@@ -167,7 +176,7 @@ namespace RandImg
             {
                 //try
                 {
-                    SetFileMatchTreeRec(basePath, 0, -1); // start index at -1 since no items present
+                    SetFileMatchTreeRec(basePath, 0, 0, 0);
                 }
                 //catch
                 //{
@@ -176,40 +185,44 @@ namespace RandImg
                 //}
             }
 
-            private int SetFileMatchTreeRec(string currentPath, int treeIndex, int maxFileInd) // returns the number of nodes in path
+
+            // depth starts at 0 for rood dir
+            private void SetFileMatchTreeRec(string currentPath, int treeIndex, int totFiles, int depth) // returns the number of nodes in path
             {
+
                 int fileMatch = 0; // files matched
                 foreach (string s in System.IO.Directory.GetFiles(currentPath))
                 {
                     if (isValid(s)) fileMatch++;
                 }
                 Debug.Assert(treeIndex == fileMatchTree.Count); // check that next element is where expected
-                fileMatchTree.Add(fileMatch + maxFileInd); // -1 because it holds max index, not size
-                maxFileInd = fileMatchTree[treeIndex]; // copy into max file index
+                fileMatchTree.Add(fileMatch + totFiles); // found files + files up to this point
+                totFiles = fileMatchTree[treeIndex]; // copy into total files, same as totFiles += fileMatch
 
-                int directoryNodes = 0; // number of total nodes associated with directories
+                //int directoryNodes = 0; // number of total nodes associated with directories
                 int dirTreeIndex = treeIndex + 1; // index of the directory's root node
                 int lastDirAmount = -1; // tree amount in last directory scanned
                 foreach (string s in System.IO.Directory.GetDirectories(currentPath))
                 {
                     Debug.Assert(dirTreeIndex == fileMatchTree.Count); // check that next element is where expected
                     fileMatchTree.Add(0); // add dummy value to be set later
-                    int childNodes = SetFileMatchTreeRec(s, dirTreeIndex + 1, maxFileInd); // number of nodes downstream
-                    directoryNodes += childNodes + 1; // add one for directory itself
-                    fileMatchTree[dirTreeIndex] = (fileMatchTree[dirTreeIndex + childNodes]); // set parent node to last child value
-                    maxFileInd = fileMatchTree[dirTreeIndex]; // copy into max file index
+                    SetFileMatchTreeRec(s, dirTreeIndex + 1, totFiles, depth + 1); // number of nodes downstream
+                    //directoryNodes += childNodes + 1; // add one for directory itself
+                    int lastTreeIndex = fileMatchTree.Count - 1; // index of current last element
+                    fileMatchTree[dirTreeIndex] = (fileMatchTree[lastTreeIndex]); // set parent node to last child value
+                    totFiles = fileMatchTree[dirTreeIndex]; // update the total files
                     if (lastDirAmount == fileMatchTree[dirTreeIndex]) // indicates given directory is completely empty
                     {
-                        fileMatchTree[dirTreeIndex] = EMPTY_DIR; // set to flag for empty directory
+                        fileMatchTree[dirTreeIndex] = -1 * depth;
                     }
                     else lastDirAmount = fileMatchTree[dirTreeIndex];
-                    dirTreeIndex += childNodes + 1; // add downstream + 1 to get index of next dir if exists
+                    dirTreeIndex = lastTreeIndex + 1; // set next file index to one more than last index
                 }
-                return 1 + directoryNodes; // one set of files matched + number in directories
+                //return 1 + directoryNodes; // one set of files matched + number in directories
 
             }
 
-            private static List<int> TreeSearch(List<int> tree, int target, int index = 0)
+            private static List<int> TreeSearch(List<int> tree, int target, int index = 0, int depth = 0)
             {
                 if (target <= tree[index])
                 {
@@ -219,7 +232,7 @@ namespace RandImg
                 {
                     if (target <= tree[i])
                     {
-                        var retVal = TreeSearch(tree, target, i + 1);
+                        var retVal = TreeSearch(tree, target, i + 1, depth + 1);
                         retVal.Insert(0, dir);
                         return retVal;
                     }
@@ -229,13 +242,13 @@ namespace RandImg
                         dir++;
                     }
                     // tree[i-1] == threshold ensures that 
-                    else if (tree[i] == EMPTY_DIR && tree[i-1] == threshold) // if value = sentinal value for empty directory
+                    else if (tree[i] != 0 && tree[i] == -1 * depth) // if value = sentinal value for empty directory
                     {
                         dir++;
                     }
                 }
 
-                Debug.Assert(true);
+                Debug.Assert(false);
                 return new List<int> { };
             }
 
