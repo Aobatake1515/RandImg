@@ -21,6 +21,8 @@ namespace RandImg
     public partial class DisplayImage : Window
     {
         private FileController fc;
+        private System.Windows.Forms.Timer timer;
+        private int timerDur = 5000;
         public DisplayImage(List<string> in_basePaths)
         {
             InitializeComponent();
@@ -28,6 +30,11 @@ namespace RandImg
             WindowState = WindowState.Maximized; // fullscreen
 
             fc = new FileController(in_basePaths);
+
+            timer = new System.Windows.Forms.Timer();
+            timer.Interval = timerDur;
+            timer.Tick += new EventHandler(TimerStart);
+
             ChooseNew(true); // init image
         }
 
@@ -37,15 +44,23 @@ namespace RandImg
             {
                 Close();
             }
-            if (e.Key == Key.Right || e.Key == Key.Space)
+            if (e.Key == Key.Right)
             {
-
                 ChooseNew(true);
             }
             if (e.Key == Key.Left)
             {
                 ChooseNew(false);
             }
+            if (e.Key == Key.Space)
+            {
+                timer.Enabled = !timer.Enabled;
+            }
+        }
+
+        protected void TimerStart(object Sender, EventArgs e)
+        {
+            ChooseNew(true);
         }
 
         /// <summary>
