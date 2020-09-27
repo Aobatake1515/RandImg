@@ -25,7 +25,7 @@ namespace RandImg
     public partial class MainWindow : Window
     {
         private Settings settings;
-
+        private const string SETTINGS_EXTENSION = "randimg";
         public MainWindow()
         {
             settings = new Settings();
@@ -70,7 +70,22 @@ namespace RandImg
         }
         private void LoadPresets_Drop(object sender, System.Windows.DragEventArgs e)
         {
-            throw new NotImplementedException();
+            // check that it is a filename
+            if (e.Data.GetDataPresent("FileName"))
+            {
+                string[] fileNames = (string[])e.Data.GetData("FileName");
+                foreach (string s in fileNames)
+                {
+                    // standardize path name format (has strange '~'s otherwise)
+                    string fullPath = System.IO.Path.GetFullPath(s);
+                    if (fullPath.EndsWith(SETTINGS_EXTENSION, StringComparison.OrdinalIgnoreCase))
+                    {
+                        string jsonString = File.ReadAllText(fullPath);
+                        settings = System.Text.Json.JsonSerializer.Deserialize<Settings>(jsonString);
+                        RefreshWindow();
+                    }
+                }
+            }
         }
 
         private void Start_Click(object sender, RoutedEventArgs e)
@@ -173,7 +188,7 @@ namespace RandImg
         private void savePresets_Click(object sender, RoutedEventArgs e)
         {
             var saveFileDialog = new SaveFileDialog();
-            saveFileDialog.Filter = "RandImg file (*.randimg)|*.randimg";
+            saveFileDialog.Filter = string.Format("RandImg file (*.{0})|*.{0}", SETTINGS_EXTENSION);
             saveFileDialog.InitialDirectory = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments);
 
             var result = saveFileDialog.ShowDialog();
@@ -205,7 +220,7 @@ namespace RandImg
         private void loadPresets_Click(object sender, RoutedEventArgs e)
         {
             var loadFileDialog = new OpenFileDialog();
-            loadFileDialog.Filter = "RandImg file (*.randimg)|*.randimg";
+            loadFileDialog.Filter = string.Format("RandImg file (*.{0})|*.{0}", SETTINGS_EXTENSION);
             loadFileDialog.InitialDirectory = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments);
 
             var result = loadFileDialog.ShowDialog();
