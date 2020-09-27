@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -15,6 +16,7 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 
+
 namespace RandImg
 {
     /// <summary>
@@ -22,19 +24,15 @@ namespace RandImg
     /// </summary>
     public partial class MainWindow : Window
     {
-        private List<string> basePathStrings = new List<string>
-        { 
-            "C:/Users/alexobatake/source/repos/RandImg/Images",
-            "C:/Users/alexobatake/source/repos/RandImg/ImagesCopy",
-            "C:/Users/alexobatake/source/repos/RandImg/Images_testPatterns",
-            "F:\\bup\\Win Backups\\12-28-18\\New folder\\小鸟酱30G"
-        }; // default paths to search
+        private Settings settings;
 
         public MainWindow()
         {
+            settings = new Settings();
+
             InitializeComponent();
             basePathsLB.SelectionMode = System.Windows.Controls.SelectionMode.Single;
-            RefreshListbox();
+            RefreshWindow();
 
             loadPresets.Drop += LoadPresets_Drop;
             basePathsLB.Drop += BasePathsLB_Drop;
@@ -59,12 +57,12 @@ namespace RandImg
                     // directories
                     if ((fileAttributes & FileAttributes.Directory) == FileAttributes.Directory)
                     {
-                        basePathStrings.Add(fullPath);
+                        settings.basePaths.Add(fullPath);
                     }
                     // files
                     else if ((fileAttributes & FileAttributes.Archive) == FileAttributes.Archive)
                     {
-                        basePathStrings.Add(System.IO.Path.GetDirectoryName(fullPath));
+                        settings.basePaths.Add(System.IO.Path.GetDirectoryName(fullPath));
                     }
                     RefreshListbox();
                 }
@@ -77,15 +75,20 @@ namespace RandImg
 
         private void Start_Click(object sender, RoutedEventArgs e)
         {
+            // check that settings matches UI
+            Debug.Assert(settings.searchPattern == searchPatternTB.Text);
+            Debug.Assert(settings.excludePattern == excludePatternTB.Text);
+            Debug.Assert(settings.fullScrn == fullScreenRB.IsChecked && settings.fullScrn != resizeRB.IsChecked);
+
             try
             {
-                DisplayImage dispImg = new DisplayImage(basePathStrings, searchPatternTB.Text, excludePatternTB.Text);
+                DisplayImage dispImg = new DisplayImage(settings);
 
-                if ((bool)fullScreenRB.IsChecked)
+                if (settings.fullScrn)
                 {
                     dispImg.Show();
                 }
-                else if ((bool)resizeRB.IsChecked)
+                else
                 {
                     ResizeWindow resize = new ResizeWindow(dispImg);
                     resize.Show();
@@ -100,28 +103,29 @@ namespace RandImg
 
         private void DirSelect_Click(object sender, RoutedEventArgs e)
         {
+            // Folder Browser Dialog is pretty awful, should replace later
             var folderBrowserDialog = new FolderBrowserDialog();
             var result = folderBrowserDialog.ShowDialog();
             if (result == System.Windows.Forms.DialogResult.OK)
             {
-                basePathStrings.Add(folderBrowserDialog.SelectedPath);
+                settings.basePaths.Add(folderBrowserDialog.SelectedPath);
                 RefreshListbox();
             }
         }
 
         private void DirRemove_Click(object sender, RoutedEventArgs e)
         {
-            basePathStrings.RemoveAt(basePathsLB.SelectedIndex);
+            settings.basePaths.RemoveAt(basePathsLB.SelectedIndex);
             RefreshListbox();
         }
 
         private string GetPathsString()
         {
             string retVal = "";
-            for (int i = 0; i < basePathStrings.Count; i++)
+            for (int i = 0; i < settings.basePaths.Count; i++)
             {
-                retVal += basePathStrings[i];
-                if (i + 1 < basePathStrings.Count)
+                retVal += settings.basePaths[i];
+                if (i + 1 < settings.basePaths.Count)
                 {
                     retVal += "\n";
                 }
@@ -134,26 +138,100 @@ namespace RandImg
         {
             basePathsLB.BeginInit();
             basePathsLB.Items.Clear();
-            foreach (string s in basePathStrings)
+            foreach (string s in settings.basePaths)
             {
                 basePathsLB.Items.Add(s);
             }
             basePathsLB.EndInit();
         }
 
-        private void textBox_TextChanged(object sender, TextChangedEventArgs e)
+        /// <summary>
+        /// sets display to match settings
+        /// </summary>
+        private void RefreshWindow()
         {
+            RefreshListbox();
 
+            fullScreenRB.IsChecked = settings.fullScrn;
+            resizeRB.IsChecked = !settings.fullScrn;
+
+            searchPatternTB.Text = settings.searchPattern;
+            excludePatternTB.Text = settings.excludePattern;
         }
+
 
         private void fullScreenRB_Checked(object sender, RoutedEventArgs e)
         {
-
+            settings.fullScrn = true;
         }
 
         private void resizeRB_Checked(object sender, RoutedEventArgs e)
         {
+            settings.fullScrn = false;
+        }
 
+        private void savePresets_Click(object sender, RoutedEventArgs e)
+        {
+            var saveFileDialog = new SaveFileDialog();
+            saveFileDialog.Filter = "RandImg file (*.randimg)|*.randimg";
+            saveFileDialog.InitialDirectory = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments);
+
+            var result = saveFileDialog.ShowDialog();
+            if (result == System.Windows.Forms.DialogResult.OK)
+            {
+                try
+                {
+                    Stream stream;
+                    if ((stream = saveFileDialog.OpenFile()) != null)
+                    {
+                        StreamWriter streamWriter = new StreamWriter(stream);
+                        // settings to print formatted
+                        var writeSettings = new System.Text.Json.JsonSerializerOptions();
+                        writeSettings.WriteIndented = true;
+                        // serialize and output
+                        streamWriter.Write(System.Text.Json.JsonSerializer.Serialize(settings, writeSettings));
+                        // close streams
+                        streamWriter.Close();
+                        stream.Close();
+                    }
+                }
+                catch
+                {
+                    System.Windows.MessageBox.Show("The settings could not be saved properly");
+                }
+            }
+        }
+
+        private void loadPresets_Click(object sender, RoutedEventArgs e)
+        {
+            var loadFileDialog = new OpenFileDialog();
+            loadFileDialog.Filter = "RandImg file (*.randimg)|*.randimg";
+            loadFileDialog.InitialDirectory = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments);
+
+            var result = loadFileDialog.ShowDialog();
+            if (result == System.Windows.Forms.DialogResult.OK)
+            {
+                try
+                {
+                    string jsonString = File.ReadAllText(loadFileDialog.FileName);
+                    settings = System.Text.Json.JsonSerializer.Deserialize<Settings>(jsonString);
+                    RefreshWindow();
+                }
+                catch
+                {
+                    System.Windows.MessageBox.Show("The settings could not be saved properly");
+                }
+            }
+        }
+
+        private void searchPatternTB_TextChanged(object sender, TextChangedEventArgs e)
+        {
+            settings.searchPattern = searchPatternTB.Text;
+        }
+
+        private void excludePatternTB_TextChanged(object sender, TextChangedEventArgs e)
+        {
+            settings.excludePattern = excludePatternTB.Text;
         }
     }
 }

@@ -23,15 +23,18 @@ namespace RandImg
         private FileController fc;
         private System.Windows.Forms.Timer timer;
         private int timerDur = 5000;
-        public DisplayImage(List<string> in_basePaths, string searchPattern = "", string excludePattern = "")
+        public DisplayImage(Settings settings)
         {
             InitializeComponent();
             WindowStyle = WindowStyle.None; // no border
-            WindowState = WindowState.Maximized; // fullscreen
+            if (settings.fullScrn)
+            {
+                WindowState = WindowState.Maximized; // fullscreen
+            }
 
             try
             {
-                fc = new FileController(in_basePaths, searchPattern, excludePattern);
+                fc = new FileController(settings.basePaths, settings.searchPattern, settings.excludePattern);
             }
             catch (Exception e) { throw e; }
 

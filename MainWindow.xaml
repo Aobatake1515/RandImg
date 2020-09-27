@@ -16,14 +16,14 @@
         </ListBox>
         <RadioButton x:Name="fullScreenRB" Content="Fullscreen" HorizontalAlignment="Left" Margin="58,143,0,0" VerticalAlignment="Top" Checked="fullScreenRB_Checked" IsChecked="True"/>
         <RadioButton x:Name="resizeRB" Content="Resizable" HorizontalAlignment="Left" Margin="58,163,0,0" VerticalAlignment="Top" Checked="resizeRB_Checked"/>
-        <TextBox x:Name="searchPatternTB" HorizontalAlignment="Left" Height="24" Margin="43,226,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="148" TextChanged="textBox_TextChanged"/>
+        <TextBox x:Name="searchPatternTB" HorizontalAlignment="Left" Height="24" Margin="43,226,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="148" TextChanged="searchPatternTB_TextChanged"/>
+        <TextBox x:Name="excludePatternTB" HorizontalAlignment="Left" Height="24" Margin="196,226,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="148" TextChanged="excludePatternTB_TextChanged"/>
         <Label x:Name="dirsLbl" Content="Directories to Search" HorizontalAlignment="Left" Margin="43,258,0,0" VerticalAlignment="Top" Width="148"/>
         <Label x:Name="dirsLbl_Copy" Content="Search Pattern" HorizontalAlignment="Left" Margin="43,200,0,0" VerticalAlignment="Top" Width="148"/>
-        <TextBox x:Name="excludePatternTB" HorizontalAlignment="Left" Height="24" Margin="196,226,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="148" TextChanged="textBox_TextChanged"/>
         <Label x:Name="dirsLbl_Copy1" Content="Exclusion Pattern" HorizontalAlignment="Left" Margin="196,200,0,0" VerticalAlignment="Top" Width="148"/>
         <Label x:Name="label" Content="Rand Img Image Gallery" HorizontalAlignment="Left" Margin="184,10,0,0" VerticalAlignment="Top" Width="482" FontSize="36" FontFamily="Yu Gothic UI Semibold"/>
-        <Button x:Name="loadPresets" Content="Load Presets or Drag Drop" HorizontalAlignment="Left" Margin="616,284,0,0" VerticalAlignment="Top" Width="148" Height="30"/>
-        <Button x:Name="savePresets" Content="Save Presets" HorizontalAlignment="Left" Margin="616,333,0,0" VerticalAlignment="Top" Width="148" Height="30"/>
+        <Button x:Name="loadPresets" Content="Load Presets or Drag Drop" HorizontalAlignment="Left" Margin="616,284,0,0" VerticalAlignment="Top" Width="148" Height="30" Click="loadPresets_Click"/>
+        <Button x:Name="savePresets" Content="Save Presets" HorizontalAlignment="Left" Margin="616,333,0,0" VerticalAlignment="Top" Width="148" Height="30" Click="savePresets_Click"/>
 
     </Grid>
 </Window>

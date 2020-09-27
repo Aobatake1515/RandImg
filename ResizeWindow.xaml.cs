@@ -30,6 +30,7 @@ namespace RandImg
 
         private void Continue_Click(object sender, RoutedEventArgs e)
         {
+            dispImg.SetSize(Left, Top, Width, Height);
             dispImg.Show();
             Close();
         }
