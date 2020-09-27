@@ -24,10 +24,10 @@ namespace RandImg
     {
         private List<string> basePathStrings = new List<string>
         { 
-            "C:/Users/alexobatake/source/repos/RandImg/Images/",
-            "C:/Users/alexobatake/source/repos/RandImg/ImagesCopy/",
-            "C:/Users/alexobatake/source/repos/RandImg/Images_testPatterns/",
-            "F:\\bup\\Win Backups\\12-28-18\\New folder\\小鸟酱30G\\"
+            "C:/Users/alexobatake/source/repos/RandImg/Images",
+            "C:/Users/alexobatake/source/repos/RandImg/ImagesCopy",
+            "C:/Users/alexobatake/source/repos/RandImg/Images_testPatterns",
+            "F:\\bup\\Win Backups\\12-28-18\\New folder\\小鸟酱30G"
         }; // default paths to search
 
         public MainWindow()
@@ -35,6 +35,44 @@ namespace RandImg
             InitializeComponent();
             basePathsLB.SelectionMode = System.Windows.Controls.SelectionMode.Single;
             RefreshListbox();
+
+            loadPresets.Drop += LoadPresets_Drop;
+            basePathsLB.Drop += BasePathsLB_Drop;
+        }
+
+        /// <summary>
+        /// adds a new path with drag drop
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void BasePathsLB_Drop(object sender, System.Windows.DragEventArgs e)
+        {
+            // check that it is a filename
+            if (e.Data.GetDataPresent("FileName"))
+            {
+                string[] fileNames = (string[])e.Data.GetData("FileName");
+                foreach (string s in fileNames)
+                {
+                    // standardize path name format (has strange '~'s otherwise)
+                    string fullPath = System.IO.Path.GetFullPath(s);
+                    FileAttributes fileAttributes = System.IO.File.GetAttributes(fullPath); // get paths
+                    // directories
+                    if ((fileAttributes & FileAttributes.Directory) == FileAttributes.Directory)
+                    {
+                        basePathStrings.Add(fullPath);
+                    }
+                    // files
+                    else if ((fileAttributes & FileAttributes.Archive) == FileAttributes.Archive)
+                    {
+                        basePathStrings.Add(System.IO.Path.GetDirectoryName(fullPath));
+                    }
+                    RefreshListbox();
+                }
+            }
+        }
+        private void LoadPresets_Drop(object sender, System.Windows.DragEventArgs e)
+        {
+            throw new NotImplementedException();
         }
 
         private void Start_Click(object sender, RoutedEventArgs e)
