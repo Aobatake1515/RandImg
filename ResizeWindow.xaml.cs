@@ -19,22 +19,17 @@ namespace RandImg
     /// </summary>
     public partial class ResizeWindow : Window
     {
-        private List<string> basePathStrings;
-        private string searchPattern;
-        private string excludePattern;
-        public ResizeWindow(List<string> in_basePaths, string in_searchPattern = "", string in_excludePattern = "")
+        private DisplayImage dispImg;
+        public ResizeWindow(DisplayImage in_dispImg)
         {
             InitializeComponent();
             //WindowStyle = WindowStyle.None; // no border
 
-            basePathStrings = in_basePaths;
-            searchPattern = in_searchPattern;
-            excludePattern = in_excludePattern;
+            dispImg = in_dispImg;
         }
 
         private void Continue_Click(object sender, RoutedEventArgs e)
         {
-            DisplayImage dispImg = new DisplayImage(basePathStrings, Left, Top, ActualWidth, ActualHeight, searchPattern, excludePattern);
             dispImg.Show();
             Close();
         }

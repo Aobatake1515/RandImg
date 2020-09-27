@@ -10,22 +10,31 @@ namespace RandImg
     public class FileController
     {
         private readonly string[] acceptableExts = { ".jpg", ".png" }; // acceptable file extensions
-        private string pattern; // TBD
+        // general pattern: prefix~pattern~restofname.extension
+        const char PATTERN_DIVIDER = '~'; // seperates pattern from rest of name
+        private string searchPattern; // chars that are needed to be accepted, null for any available
+        private string excludePattern; // chars that can't be accepted
         private Directory[] directories; // directories to search
-        readonly int numMatch; // total number of files that match the pattern
+        public readonly int numMatch; // total number of files that match the pattern
         private int currentFile; // file index before being randomized
         private List<int> randomMap; // routes currentFile to random value in range; maps all input to all output 1:1
 
-        public FileController(List<string> baseDirs)
+        public FileController(List<string> baseDirs, string in_searchPattern = "", string in_excludePattern = "")
         {
             directories = new Directory[baseDirs.Count];
             currentFile = 0;
+            searchPattern = in_searchPattern;
+            excludePattern = in_excludePattern;
 
             numMatch = 0;
             for (int i = 0; i < baseDirs.Count; i++)
             {
                 directories[i] = new Directory(baseDirs[i], IsValid);
                 numMatch += directories[i].numMatch;
+            }
+            if (numMatch == 0)
+            {
+                throw new Exception("FileController: No matching files were found in any directory");
             }
 
             randomMap = new List<int>(numMatch);
@@ -83,9 +92,58 @@ namespace RandImg
             }
             if (!matchExt) return false;
 
+            // add dimensions testing here if desired later
 
+            // true of no search constraints given
+            if (searchPattern == "" && excludePattern == "") return true;
 
+            string localName = System.IO.Path.GetFileName(fileName);
+            string filePattern = ExtractPattern(localName);
+
+            // return false if any exclusions match
+            foreach (char c in excludePattern)
+            {
+                if (c == 0) break; // check null terminator
+                if (filePattern.Contains(c))
+                {
+                    return false;
+                }
+            }
+
+            // if no pattern found in file, but pattern is specified
+            if (filePattern == "" && searchPattern != "") return false;
+            // sieve for each filePattern char in searchPattern
+            foreach (char c in searchPattern)
+            {
+                if (c == 0) break; // check null terminator
+                if (!filePattern.Contains(c))
+                {
+                    return false;
+                }
+            }
+
+            // valid if not shown to be invalid
             return true;
+        }
+
+        private static string ExtractPattern(string localName)
+        {
+            string filePattern = "";
+            bool inFilter = false;
+            foreach (char c in localName)
+            {
+                if (c == 0) break; // check null terminator
+                if (c.Equals('~'))
+                {
+                    if (!inFilter) inFilter = true;
+                    else break;
+                }
+                else if (inFilter)
+                {
+                    filePattern += c;
+                }
+            }
+            return filePattern;
         }
 
         private int NextRandom()

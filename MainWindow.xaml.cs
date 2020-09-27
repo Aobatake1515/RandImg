@@ -26,6 +26,7 @@ namespace RandImg
         { 
             "C:/Users/alexobatake/source/repos/RandImg/Images/",
             "C:/Users/alexobatake/source/repos/RandImg/ImagesCopy/",
+            "C:/Users/alexobatake/source/repos/RandImg/Images_testPatterns/",
             "F:\\bup\\Win Backups\\12-28-18\\New folder\\小鸟酱30G\\"
         }; // default paths to search
 
@@ -38,18 +39,25 @@ namespace RandImg
 
         private void Start_Click(object sender, RoutedEventArgs e)
         {
-            if ((bool)fullScreenRB.IsChecked)
+            try
             {
                 DisplayImage dispImg = new DisplayImage(basePathStrings, searchPatternTB.Text, excludePatternTB.Text);
-                dispImg.Show();
-            }
-            else if ((bool)resizeRB.IsChecked)
-            {
-                ResizeWindow resize = new ResizeWindow(basePathStrings, searchPatternTB.Text, excludePatternTB.Text);
-                resize.Show();
-            }
-            WindowState = WindowState.Minimized;
 
+                if ((bool)fullScreenRB.IsChecked)
+                {
+                    dispImg.Show();
+                }
+                else if ((bool)resizeRB.IsChecked)
+                {
+                    ResizeWindow resize = new ResizeWindow(dispImg);
+                    resize.Show();
+                }
+                WindowState = WindowState.Minimized;
+            }
+            catch
+            {
+                System.Windows.MessageBox.Show("No matching files were found :(\n please enter another search");
+            }
         }
 
         private void DirSelect_Click(object sender, RoutedEventArgs e)

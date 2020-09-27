@@ -29,7 +29,11 @@ namespace RandImg
             WindowStyle = WindowStyle.None; // no border
             WindowState = WindowState.Maximized; // fullscreen
 
-            fc = new FileController(in_basePaths);
+            try
+            {
+                fc = new FileController(in_basePaths, searchPattern, excludePattern);
+            }
+            catch (Exception e) { throw e; }
 
             timer = new System.Windows.Forms.Timer();
             timer.Interval = timerDur;
@@ -38,8 +42,7 @@ namespace RandImg
             ChooseNew(true); // init image
         }
 
-        public DisplayImage(List<string> in_basePaths, double left, double top, double width, double height, string searchPattern = "", string excludePattern = "")
-            : this(in_basePaths, searchPattern, excludePattern)
+        public void SetSize(double left, double top, double width, double height)
         {
             WindowState = WindowState.Normal; // normal
             Left = left;
@@ -123,7 +126,6 @@ namespace RandImg
         {
             NewImage(new Uri(fc.GetNewPath(direction)));
         }
-
     }
 }
 
