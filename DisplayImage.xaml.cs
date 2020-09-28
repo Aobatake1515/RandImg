@@ -28,6 +28,7 @@ namespace RandImg
         {
             InitializeComponent();
             WindowStyle = WindowStyle.None; // no border
+            Topmost = true; // always on top
             fullScreen = settings.fullScrn;
             if (settings.fullScrn)
             {
@@ -61,7 +62,7 @@ namespace RandImg
         {
             if (e.Key == Key.Escape)
             {
-                Close();
+                CloseFull();
             }
             if (e.Key == Key.Right)
             {
@@ -76,6 +77,11 @@ namespace RandImg
             if (e.Key == Key.Space)
             {
                 timer.Enabled = !timer.Enabled;
+            }
+            if (e.Key == Key.R)
+            {
+                Rename rename = new Rename(fc.GetCurrentPath(), ResetFiles);
+                rename.Show();
             }
             // toggle border
             if (e.Key == Key.B)
@@ -152,7 +158,9 @@ namespace RandImg
             BitmapImage bitMapImg = new BitmapImage();
             bitMapImg.BeginInit();
             bitMapImg.UriSource = uri;
+            bitMapImg.CacheOption = BitmapCacheOption.OnLoad; // allows file to be released
             bitMapImg.EndInit();
+            bitMapImg.Freeze();
             image.Source = bitMapImg;
             imageBack.Source = bitMapImg;
         }
@@ -160,6 +168,27 @@ namespace RandImg
         protected void ChooseNew(bool direction)
         {
             NewImage(new Uri(fc.GetNewPath(direction)));
+        }
+
+        private void ResetFiles()
+        {
+            try
+            {
+                fc.ResetDirectories();
+            }
+            catch
+            {
+                System.Windows.MessageBox.Show("No matching files were found :(\n please enter another search");
+            }
+        }
+
+        public void CloseFull()
+        {
+            image.Source = null;
+            imageBack.Source = null;
+            UpdateLayout();
+            GC.Collect();
+            Close();
         }
     }
 }

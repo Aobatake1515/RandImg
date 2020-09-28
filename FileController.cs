@@ -15,7 +15,7 @@ namespace RandImg
         private string searchPattern; // chars that are needed to be accepted, null for any available
         private string excludePattern; // chars that can't be accepted
         private Directory[] directories; // directories to search
-        public readonly int numMatch; // total number of files that match the pattern
+        public int numMatch { get; private set;} // total number of files that match the pattern
         private int currentFile; // file index before being randomized
         private List<int> randomMap; // routes currentFile to random value in range; maps all input to all output 1:1
 
@@ -37,6 +37,30 @@ namespace RandImg
                 throw new Exception("FileController: No matching files were found in any directory");
             }
 
+            GenerateRandomMap();
+        }
+
+        public void ResetDirectories()
+        {
+            numMatch = 0;
+            for (int i = 0; i < directories.Length; i++)
+            {
+                directories[i] = new Directory(directories[i].basePath, IsValid);
+                numMatch += directories[i].numMatch;
+            }
+            if (numMatch == 0)
+            {
+                throw new Exception("FileController: No matching files were found in any directory");
+            }
+
+            GenerateRandomMap();
+        }
+
+        /// <summary>
+        /// generates a random map between integers between 0 and numMatch - 1, all numbers included once
+        /// </summary>
+        private void GenerateRandomMap()
+        {
             randomMap = new List<int>(numMatch);
             for (int i = 0; i < numMatch; i++)
             {
@@ -51,7 +75,6 @@ namespace RandImg
                 randomMap[i] = randomMap[j];
                 randomMap[j] = temp;
             }
-
         }
 
         /// <summary>
@@ -62,6 +85,16 @@ namespace RandImg
         public string GetNewPath(bool direction)
         {
             int targetVal = direction ? NextRandom() : LastRandom();
+            return GetPath(targetVal);
+        }
+
+        public string GetCurrentPath()
+        {
+            return GetPath(CurrentIndex());
+        }
+
+        public string GetPath(int targetVal)
+        {
             for (int i = 0, numMatchTot = 0; i < directories.Length; i++)
             {
                 numMatchTot += directories[i].numMatch;
@@ -79,8 +112,6 @@ namespace RandImg
 
         public bool IsValid(string fileName)
         {
-            // DUMMY CODE
-
             // check that file ends in acceptable extension
             bool matchExt = false;
             foreach (string s in acceptableExts)
@@ -150,13 +181,18 @@ namespace RandImg
         {
             currentFile++;
             if (currentFile >= numMatch) currentFile -= numMatch;
-            return randomMap[currentFile];
+            return CurrentIndex();
         }
 
         private int LastRandom()
         {
             currentFile--;
             if (currentFile < 0) currentFile += numMatch;
+            return CurrentIndex();
+        }
+
+        private int CurrentIndex()
+        {
             return randomMap[currentFile];
         }
 
