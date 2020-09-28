@@ -8,7 +8,7 @@
         Title="Rand Img" Height="450" Width="800" AllowDrop="True">
     <Grid x:Name="mainWindow" AllowDrop="True">
         <GroupBox x:Name="groupBox" Header="Window Type" HorizontalAlignment="Left" Height="75" Margin="43,116,0,0" VerticalAlignment="Top" Width="148"/>
-        <Button x:Name="start" Content="Start!" HorizontalAlignment="Left" Margin="469,137,0,0" VerticalAlignment="Top" Width="230" Click="Start_Click" Height="89" FontSize="36" FontFamily="Yu Gothic UI Semibold"/>
+        <Button x:Name="start" Content="Start!" HorizontalAlignment="Left" Margin="534,116,0,0" VerticalAlignment="Top" Width="230" Click="Start_Click" Height="89" FontSize="36" FontFamily="Yu Gothic UI Semibold"/>
         <Button x:Name="DirSelect" Content="Add" HorizontalAlignment="Left" VerticalAlignment="Top" Width="75" Margin="43,368,0,0" Click="DirSelect_Click"/>
         <Button x:Name="DirRemove" Content="Remove" HorizontalAlignment="Left" VerticalAlignment="Top" Width="75" Margin="147,368,0,0" Click="DirRemove_Click"/>
         <ListBox x:Name="basePathsLB" HorizontalAlignment="Left" Height="79" Margin="43,284,0,0" VerticalAlignment="Top" Width="519">
@@ -16,14 +16,16 @@
         </ListBox>
         <RadioButton x:Name="fullScreenRB" Content="Fullscreen" HorizontalAlignment="Left" Margin="58,143,0,0" VerticalAlignment="Top" Checked="fullScreenRB_Checked" IsChecked="True"/>
         <RadioButton x:Name="resizeRB" Content="Resizable" HorizontalAlignment="Left" Margin="58,163,0,0" VerticalAlignment="Top" Checked="resizeRB_Checked"/>
-        <TextBox x:Name="searchPatternTB" HorizontalAlignment="Left" Height="24" Margin="43,226,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="148" TextChanged="searchPatternTB_TextChanged"/>
-        <TextBox x:Name="excludePatternTB" HorizontalAlignment="Left" Height="24" Margin="196,226,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="148" TextChanged="excludePatternTB_TextChanged"/>
+        <TextBox x:Name="searchPatternAndTB" HorizontalAlignment="Left" Height="24" Margin="43,226,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="148" TextChanged="searchPatternAndTB_TextChanged"/>
+        <TextBox x:Name="searchPatternOrTB" HorizontalAlignment="Left" Height="24" Margin="196,226,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="148" TextChanged="searchPatternOrTB_TextChanged"/>
+        <TextBox x:Name="excludePatternTB" HorizontalAlignment="Left" Height="24" Margin="349,226,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="148" TextChanged="excludePatternTB_TextChanged"/>
         <Label x:Name="dirsLbl" Content="Directories to Search (Drag Drop)" HorizontalAlignment="Left" Margin="43,258,0,0" VerticalAlignment="Top" Width="195"/>
-        <Label x:Name="dirsLbl_Copy" Content="Search Pattern" HorizontalAlignment="Left" Margin="43,200,0,0" VerticalAlignment="Top" Width="148"/>
-        <Label x:Name="dirsLbl_Copy1" Content="Exclusion Pattern" HorizontalAlignment="Left" Margin="196,200,0,0" VerticalAlignment="Top" Width="148"/>
+        <Label x:Name="dirsLbl_Copy" Content="Search Pattern (and)" HorizontalAlignment="Left" Margin="43,200,0,0" VerticalAlignment="Top" Width="148"/>
+        <Label x:Name="dirsLbl_Copy1" Content="Exclusion Pattern" HorizontalAlignment="Left" Margin="349,200,0,0" VerticalAlignment="Top" Width="148"/>
         <Label x:Name="label" Content="Rand Img Image Gallery" HorizontalAlignment="Left" Margin="184,10,0,0" VerticalAlignment="Top" Width="482" FontSize="36" FontFamily="Yu Gothic UI Semibold"/>
         <Button x:Name="loadPresets" Content="Load Presets (Drag Drop)" HorizontalAlignment="Left" Margin="616,284,0,0" VerticalAlignment="Top" Width="148" Height="30" Click="loadPresets_Click"/>
         <Button x:Name="savePresets" Content="Save Presets" HorizontalAlignment="Left" Margin="616,333,0,0" VerticalAlignment="Top" Width="148" Height="30" Click="savePresets_Click"/>
+        <Label x:Name="dirsLbl_Copy2" Content="Search Pattern (or)" HorizontalAlignment="Left" Margin="196,200,0,0" VerticalAlignment="Top" Width="148"/>
 
     </Grid>
 </Window>

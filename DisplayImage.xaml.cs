@@ -24,9 +24,11 @@ namespace RandImg
         private System.Windows.Forms.Timer timer;
         private int timerDur = 5000;
         private bool fullScreen = true;
-        public DisplayImage(Settings settings)
+        private Action unminimizeMain;
+        public DisplayImage(Settings settings, Action in_unminimizeMain)
         {
             InitializeComponent();
+            unminimizeMain = in_unminimizeMain;
             WindowStyle = WindowStyle.None; // no border
             Topmost = true; // always on top
             fullScreen = settings.fullScrn;
@@ -37,7 +39,7 @@ namespace RandImg
 
             try
             {
-                fc = new FileController(settings.basePaths, settings.searchPattern, settings.excludePattern);
+                fc = new FileController(settings.basePaths, settings.searchPatternAnd, settings.searchPatternOr, settings.excludePattern);
             }
             catch (Exception e) { throw e; }
 
@@ -188,6 +190,13 @@ namespace RandImg
             imageBack.Source = null;
             UpdateLayout();
             GC.Collect();
+
+            try
+            {
+                unminimizeMain();
+            }
+            catch { }
+
             Close();
         }
     }

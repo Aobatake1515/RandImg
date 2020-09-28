@@ -12,18 +12,20 @@ namespace RandImg
         private readonly string[] acceptableExts = { ".jpg", ".png" }; // acceptable file extensions
         // general pattern: prefix~pattern~restofname.extension
         const char PATTERN_DIVIDER = '~'; // seperates pattern from rest of name
-        private string searchPattern; // chars that are needed to be accepted, null for any available
+        private string searchPatternAnd; // chars that are needed to be accepted, all must be present, null for any available
+        private string searchPatternOr; // chars that are needed to be accepted, at lease one must be present, null for any available
         private string excludePattern; // chars that can't be accepted
         private Directory[] directories; // directories to search
         public int numMatch { get; private set;} // total number of files that match the pattern
         private int currentFile; // file index before being randomized
         private List<int> randomMap; // routes currentFile to random value in range; maps all input to all output 1:1
 
-        public FileController(List<string> baseDirs, string in_searchPattern = "", string in_excludePattern = "")
+        public FileController(List<string> baseDirs, string in_searchPatternAnd = "", string in_searchPatternOr = "", string in_excludePattern = "")
         {
             directories = new Directory[baseDirs.Count];
             currentFile = 0;
-            searchPattern = in_searchPattern;
+            searchPatternAnd = in_searchPatternAnd;
+            searchPatternOr = in_searchPatternOr;
             excludePattern = in_excludePattern;
 
             numMatch = 0;
@@ -125,33 +127,51 @@ namespace RandImg
 
             // add dimensions testing here if desired later
 
-            // true of no search constraints given
-            if (searchPattern == "" && excludePattern == "") return true;
-
             string localName = System.IO.Path.GetFileName(fileName);
             string filePattern = ExtractPattern(localName);
 
             // return false if any exclusions match
-            foreach (char c in excludePattern)
+            if (excludePattern != "")
             {
-                if (c == 0) break; // check null terminator
-                if (filePattern.Contains(c))
+                foreach (char c in excludePattern)
                 {
-                    return false;
+                    if (c == 0) break; // check null terminator
+                    if (filePattern.Contains(c))
+                    {
+                        return false;
+                    }
                 }
             }
 
-            // if no pattern found in file, but pattern is specified
-            if (filePattern == "" && searchPattern != "") return false;
-            // sieve for each filePattern char in searchPattern
-            foreach (char c in searchPattern)
+
+            // sieve for each filePattern char in searchPatternAnd
+            if (searchPatternAnd != "")
             {
-                if (c == 0) break; // check null terminator
-                if (!filePattern.Contains(c))
+                foreach (char c in searchPatternAnd)
                 {
-                    return false;
+                    if (c == 0) break; // check null terminator
+                    if (!filePattern.Contains(c))
+                    {
+                        return false;
+                    }
                 }
             }
+
+            // sieve for at least one filePattern char in searchPatternOr
+            if (searchPatternAnd != "")
+            {
+                bool found = false;
+                foreach (char c in searchPatternOr)
+                {
+                    if (c == 0) break; // check null terminator
+                    if (filePattern.Contains(c))
+                    {
+                        found = true;
+                    }
+                }
+                if (!found) return false;
+            }
+
 
             // valid if not shown to be invalid
             return true;

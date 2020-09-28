@@ -91,13 +91,14 @@ namespace RandImg
         private void Start_Click(object sender, RoutedEventArgs e)
         {
             // check that settings matches UI
-            Debug.Assert(settings.searchPattern == searchPatternTB.Text);
+            Debug.Assert(settings.searchPatternAnd == searchPatternAndTB.Text);
+            Debug.Assert(settings.searchPatternOr == searchPatternOrTB.Text);
             Debug.Assert(settings.excludePattern == excludePatternTB.Text);
             Debug.Assert(settings.fullScrn == fullScreenRB.IsChecked && settings.fullScrn != resizeRB.IsChecked);
 
             try
             {
-                DisplayImage dispImg = new DisplayImage(settings);
+                DisplayImage dispImg = new DisplayImage(settings, Unminimize);
 
                 if (settings.fullScrn)
                 {
@@ -134,21 +135,6 @@ namespace RandImg
             RefreshListbox();
         }
 
-        private string GetPathsString()
-        {
-            string retVal = "";
-            for (int i = 0; i < settings.basePaths.Count; i++)
-            {
-                retVal += settings.basePaths[i];
-                if (i + 1 < settings.basePaths.Count)
-                {
-                    retVal += "\n";
-                }
-
-            }
-            return retVal;
-        }
-
         private void RefreshListbox()
         {
             basePathsLB.BeginInit();
@@ -170,8 +156,24 @@ namespace RandImg
             fullScreenRB.IsChecked = settings.fullScrn;
             resizeRB.IsChecked = !settings.fullScrn;
 
-            searchPatternTB.Text = settings.searchPattern;
+            searchPatternAndTB.Text = settings.searchPatternAnd;
+            searchPatternOrTB.Text = settings.searchPatternOr;
             excludePatternTB.Text = settings.excludePattern;
+        }
+
+        public void Unminimize()
+        {
+            WindowState = WindowState.Normal;
+        }
+
+        /// <summary>
+        /// Closes this and application to fully close
+        /// </summary>
+        /// <param name="e"></param>
+        protected override void OnClosed(EventArgs e)
+        {
+            base.OnClosed(e);
+            System.Windows.Application.Current.Shutdown();
         }
 
 
@@ -239,14 +241,19 @@ namespace RandImg
             }
         }
 
-        private void searchPatternTB_TextChanged(object sender, TextChangedEventArgs e)
-        {
-            settings.searchPattern = searchPatternTB.Text;
-        }
-
         private void excludePatternTB_TextChanged(object sender, TextChangedEventArgs e)
         {
             settings.excludePattern = excludePatternTB.Text;
+        }
+
+        private void searchPatternAndTB_TextChanged(object sender, TextChangedEventArgs e)
+        {
+            settings.searchPatternAnd = searchPatternAndTB.Text;
+        }
+
+        private void searchPatternOrTB_TextChanged(object sender, TextChangedEventArgs e)
+        {
+            settings.searchPatternOr = searchPatternOrTB.Text;
         }
     }
 }
