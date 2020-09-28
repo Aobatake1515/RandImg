@@ -23,10 +23,12 @@ namespace RandImg
         private FileController fc;
         private System.Windows.Forms.Timer timer;
         private int timerDur = 5000;
+        private bool fullScreen = true;
         public DisplayImage(Settings settings)
         {
             InitializeComponent();
             WindowStyle = WindowStyle.None; // no border
+            fullScreen = settings.fullScrn;
             if (settings.fullScrn)
             {
                 WindowState = WindowState.Maximized; // fullscreen
@@ -75,6 +77,7 @@ namespace RandImg
             {
                 timer.Enabled = !timer.Enabled;
             }
+            // toggle border
             if (e.Key == Key.B)
             {
                 if (WindowStyle == WindowStyle.None)
@@ -84,6 +87,35 @@ namespace RandImg
                 else
                 {
                     WindowStyle = WindowStyle.None;
+                }
+            }
+            // toggle minimize
+            if (e.Key == Key.M)
+            {
+                if (WindowState == WindowState.Minimized)
+                {
+                    WindowState = fullScreen ? WindowState.Maximized : WindowState.Normal;
+                    FillImage();
+                }
+                else
+                {
+                    WindowState = WindowState.Minimized;
+                }
+            }
+            // toggle fullscreen
+            if (e.Key == Key.F)
+            {
+                if (WindowState == WindowState.Maximized)
+                {
+                    WindowState = WindowState.Normal;
+                    fullScreen = false;
+                    FillImage();
+                }
+                else
+                {
+                    WindowState = WindowState.Maximized;
+                    fullScreen = true;
+                    FillImage();
                 }
             }
         }
