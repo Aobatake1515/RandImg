@@ -26,6 +26,7 @@ namespace RandImg
     {
         private Settings settings;
         private const string SETTINGS_EXTENSION = "randimg";
+        private const string PRESET_FOLDER = "presets";
         public MainWindow()
         {
             settings = new Settings();
@@ -187,11 +188,18 @@ namespace RandImg
             settings.fullScrn = false;
         }
 
+        private string PresetsPath()
+        {
+            string directory = AppDomain.CurrentDomain.BaseDirectory;
+            var dirInfo = System.IO.Directory.CreateDirectory(System.IO.Path.Combine(directory, PRESET_FOLDER));
+            return dirInfo.FullName;
+        }
+
         private void savePresets_Click(object sender, RoutedEventArgs e)
         {
             var saveFileDialog = new SaveFileDialog();
             saveFileDialog.Filter = string.Format("RandImg file (*.{0})|*.{0}", SETTINGS_EXTENSION);
-            saveFileDialog.InitialDirectory = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments);
+            saveFileDialog.InitialDirectory = PresetsPath();
 
             var result = saveFileDialog.ShowDialog();
             if (result == System.Windows.Forms.DialogResult.OK)
@@ -223,7 +231,7 @@ namespace RandImg
         {
             var loadFileDialog = new OpenFileDialog();
             loadFileDialog.Filter = string.Format("RandImg file (*.{0})|*.{0}", SETTINGS_EXTENSION);
-            loadFileDialog.InitialDirectory = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments);
+            loadFileDialog.InitialDirectory = PresetsPath();
 
             var result = loadFileDialog.ShowDialog();
             if (result == System.Windows.Forms.DialogResult.OK)
