@@ -22,7 +22,6 @@ namespace RandImg
     {
         private FileController fc;
         private System.Windows.Forms.Timer timer;
-        private int timerDur = 5000;
         private bool fullScreen = true;
         private Action unminimizeMain;
         public DisplayImage(Settings settings, Action in_unminimizeMain)
@@ -44,8 +43,9 @@ namespace RandImg
             catch (Exception e) { throw e; }
 
             timer = new System.Windows.Forms.Timer();
-            timer.Interval = timerDur;
+            timer.Interval = (int)Math.Round(settings.autoDuration * 1000, 0); // convert float seconds to int ms
             timer.Tick += new EventHandler(TimerStart);
+            timer.Enabled = settings.autoPlay; // enable from settings
 
             ChooseNew(true); // init image
         }

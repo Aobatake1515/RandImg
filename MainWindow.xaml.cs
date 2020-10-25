@@ -272,6 +272,7 @@ namespace RandImg
             float newDuration = settings.autoDuration; // seconds
             if (Single.TryParse(autoDurationTB.Text, out newDuration))
             {
+                if (newDuration < Settings.minAutoDuration) newDuration = Settings.minAutoDuration;
                 settings.autoDuration = newDuration;
             } 
             RefreshWindow();

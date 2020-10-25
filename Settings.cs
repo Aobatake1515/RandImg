@@ -8,6 +8,8 @@ namespace RandImg
 {
     public class Settings
     {
+        public const float minAutoDuration = 0.1f; // shortest allowed duration, seconds
+
         public List<string> basePaths { get; set; }
         public string searchPatternAnd { get; set; }
         public string searchPatternOr { get; set; }
