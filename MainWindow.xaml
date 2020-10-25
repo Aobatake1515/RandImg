@@ -5,7 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:RandImg"
         mc:Ignorable="d"
-        Title="Rand Img" Height="450" Width="800" AllowDrop="True">
+        Title="Rand Img" Height="450" Width="800" AllowDrop="True" KeyDown="Window_KeyDown">
     <Grid x:Name="mainWindow" AllowDrop="True">
         <GroupBox x:Name="groupBox" Header="Window Type" HorizontalAlignment="Left" Height="75" Margin="43,116,0,0" VerticalAlignment="Top" Width="148"/>
         <Button x:Name="start" Content="Start!" HorizontalAlignment="Left" Margin="534,116,0,0" VerticalAlignment="Top" Width="230" Click="Start_Click" Height="89" FontSize="36" FontFamily="Yu Gothic UI Semibold"/>
@@ -25,6 +25,13 @@
         <Label x:Name="label" Content="Rand Img Image Gallery" HorizontalAlignment="Left" Margin="184,10,0,0" VerticalAlignment="Top" Width="482" FontSize="36" FontFamily="Yu Gothic UI Semibold"/>
         <Button x:Name="loadPresets" Content="Load Presets (Drag Drop)" HorizontalAlignment="Left" Margin="616,284,0,0" VerticalAlignment="Top" Width="148" Height="30" Click="loadPresets_Click"/>
         <Button x:Name="savePresets" Content="Save Presets" HorizontalAlignment="Left" Margin="616,333,0,0" VerticalAlignment="Top" Width="148" Height="30" Click="savePresets_Click"/>
+        <GroupBox x:Name="autoPlayGB" Header="Auto Play" HorizontalAlignment="Left" Height="75" Margin="196,116,0,0" VerticalAlignment="Top" Width="301">
+            <Grid x:Name="autoPlayGrid" HorizontalAlignment="Center" Height="44" Margin="0" VerticalAlignment="Center" Width="282">
+                <CheckBox x:Name="isAutoCB" Content="Start in Auto Play" HorizontalAlignment="Left" VerticalAlignment="Center" Margin="10,0,0,0" Click="isAutoCB_Click"/>
+                <Label x:Name="autoDurationLBL" Content="Duration (seconds)" HorizontalAlignment="Left" Margin="157,0,0,0" VerticalAlignment="Top" Width="115"/>
+                <TextBox x:Name="autoDurationTB" HorizontalAlignment="Left" Margin="162,21,0,3" TextWrapping="Wrap" Text="5.00" Width="110" LostFocus="autoDurationTB_LostFocus"/>
+            </Grid>
+        </GroupBox>
         <Label x:Name="dirsLbl_Copy2" Content="Search Pattern (or)" HorizontalAlignment="Left" Margin="196,200,0,0" VerticalAlignment="Top" Width="148"/>
 
     </Grid>

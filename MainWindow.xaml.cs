@@ -160,6 +160,9 @@ namespace RandImg
             searchPatternAndTB.Text = settings.searchPatternAnd;
             searchPatternOrTB.Text = settings.searchPatternOr;
             excludePatternTB.Text = settings.excludePattern;
+
+            isAutoCB.IsChecked = settings.autoPlay;
+            autoDurationTB.Text = settings.autoDuration.ToString("N2");
         }
 
         public void Unminimize()
@@ -262,6 +265,34 @@ namespace RandImg
         private void searchPatternOrTB_TextChanged(object sender, TextChangedEventArgs e)
         {
             settings.searchPatternOr = searchPatternOrTB.Text;
+        }
+
+        private void CheckAutoDurationTB()
+        {
+            float newDuration = settings.autoDuration; // seconds
+            if (Single.TryParse(autoDurationTB.Text, out newDuration))
+            {
+                settings.autoDuration = newDuration;
+            } 
+            RefreshWindow();
+        }
+
+        private void autoDurationTB_LostFocus(object sender, RoutedEventArgs e)
+        {
+            CheckAutoDurationTB();
+        }
+
+        private void Window_KeyDown(object sender, System.Windows.Input.KeyEventArgs e)
+        {
+            if (e.Key == Key.Enter)
+            {
+                CheckAutoDurationTB();
+            }
+        }
+
+        private void isAutoCB_Click(object sender, RoutedEventArgs e)
+        {
+            settings.autoPlay = isAutoCB.IsChecked ?? false; // safe cast from nullable
         }
     }
 }
