@@ -13,50 +13,69 @@ namespace RandImg
 
         private readonly string[] acceptableExts = { ".jpg", ".png" }; // acceptable file extensions
         // general pattern: prefix~pattern~restofname.extension
-        const char PATTERN_DIVIDER = '~'; // seperates pattern from rest of name
+        private const char PATTERN_DIVIDER = '~'; // seperates pattern from rest of name
         private string searchPatternAnd; // chars that are needed to be accepted, all must be present, null for any available
         private string searchPatternOr; // chars that are needed to be accepted, at lease one must be present, null for any available
         private string excludePattern; // chars that can't be accepted
-        private Directory[] directories; // directories to search
-        public int numMatch { get; private set;} // total number of files that match the pattern
+        private List<string> baseDirs; // base directories to search
+        private List<string> filenames; // list of filenames for matched files as strings
+        public int numMatch { get { return filenames.Count; } } // total number of files that match the pattern
         private int currentFile; // file index before being randomized
         private List<int> randomMap; // routes currentFile to random value in range; maps all input to all output 1:1
 
-        public FileController(List<string> baseDirs, string in_searchPatternAnd = "", string in_searchPatternOr = "", string in_excludePattern = "")
+
+
+
+        public FileController(List<string> in_baseDirs, string in_searchPatternAnd = "", string in_searchPatternOr = "", string in_excludePattern = "")
         {
-            directories = new Directory[baseDirs.Count];
             currentFile = 0;
+            baseDirs = new List<string>(in_baseDirs);
             searchPatternAnd = in_searchPatternAnd;
             searchPatternOr = in_searchPatternOr;
             excludePattern = in_excludePattern;
 
-            numMatch = 0;
-            for (int i = 0; i < baseDirs.Count; i++)
-            {
-                directories[i] = new Directory(baseDirs[i], IsValid);
-                numMatch += directories[i].numMatch;
-            }
-            if (numMatch == 0)
-            {
-                throw new Exception("FileController: No matching files were found in any directory");
-            }
+            filenames = new List<string>();
 
-            GenerateRandomMap();
+            ResetDirectories();
+        }
+
+        /// <summary>
+        /// Sets the file names of matched files into filenames for each of the base directories
+        /// </summary>
+        private void SetFilenames()
+        {
+            Debug.Assert(filenames.Count == 0); // assumed to be empty at this point
+
+            foreach (string s in baseDirs)
+            {
+                SetFilenames(s);
+            }
+        }
+
+        /// <summary>
+        /// recursive helper to set file names of the current dir into filenames
+        /// </summary>
+        /// <param name="currentPath"> current directory being searched</param>
+        private void SetFilenames(string currentPath)
+        {
+            foreach (string s in System.IO.Directory.GetFiles(currentPath)) // loop all local files
+            {
+                if (IsValid(s)) filenames.Add(s);
+            }
+            foreach (string s in System.IO.Directory.GetDirectories(currentPath)) // loop all directories
+            {
+                SetFilenames(s); // recurse
+            }
         }
 
         public void ResetDirectories()
         {
-            numMatch = 0;
-            for (int i = 0; i < directories.Length; i++)
-            {
-                directories[i] = new Directory(directories[i].basePath, IsValid);
-                numMatch += directories[i].numMatch;
-            }
+            filenames.Clear();
+            SetFilenames();
             if (numMatch == 0)
             {
                 throw new Exception("FileController: No matching files were found in any directory");
             }
-
             GenerateRandomMap();
         }
 
@@ -92,29 +111,40 @@ namespace RandImg
             return GetPath(targetVal);
         }
 
+        /// <summary>
+        /// gets the current path
+        /// </summary>
+        /// <returns></returns>
         public string GetCurrentPath()
         {
             return GetPath(CurrentIndex());
         }
 
+        /// <summary>
+        /// gets the path at the given index, checks for validity, throws if invalid
+        /// </summary>
+        /// <param name="targetVal">index intended in filenames</param>
+        /// <returns>file name of the requested file with full path</returns>
         public string GetPath(int targetVal)
         {
-            for (int i = 0, numMatchTot = 0; i < directories.Length; i++)
+            if (targetVal < filenames.Count && targetVal >= 0)
             {
-                numMatchTot += directories[i].numMatch;
-                if (targetVal < numMatchTot)
-                {
-                    // offset by numMatch - numMatchTot to normalize later dir indicies to start from 0 in dir
-                    return directories[i].GetImgPath(targetVal + directories[i].numMatch - numMatchTot);
-                }
+                return filenames[targetVal];
             }
-            // not found somehow
-            string errorMsg = "GetPath: failed to find path";
-            Debug.Assert(false, errorMsg);
-            throw new Exception(errorMsg);
+            else
+            {
+                // not found somehow
+                string errorMsg = "GetPath: failed to find path";
+                Debug.Assert(false, errorMsg);
+                throw new Exception(errorMsg);
+            }
         }
 
-
+        /// <summary>
+        /// checks whether the filename given is valid for the selection constraints
+        /// </summary>
+        /// <param name="fileName">name of file to check</param>
+        /// <returns>whether it maches constraints</returns>
         public bool IsValid(string fileName)
         {
             // check that file ends in acceptable extension
@@ -145,7 +175,6 @@ namespace RandImg
                     }
                 }
             }
-
 
             // sieve for each filePattern char in searchPatternAnd
             if (searchPatternAnd != "")
@@ -180,6 +209,11 @@ namespace RandImg
             return true;
         }
 
+        /// <summary>
+        /// gets the pattern from the given local filename
+        /// </summary>
+        /// <param name="localName">file name without path</param>
+        /// <returns>extracted selection patten (text between ~~)</returns>
         private static string ExtractPattern(string localName)
         {
             string filePattern = "";
@@ -200,6 +234,10 @@ namespace RandImg
             return filePattern;
         }
 
+        /// <summary>
+        /// gets next deterministic random value, wraps around numMatch
+        /// </summary>
+        /// <returns></returns>
         private int NextRandom()
         {
             currentFile++;
@@ -207,6 +245,10 @@ namespace RandImg
             return CurrentIndex();
         }
 
+        /// <summary>
+        /// gets previous deterministic random value, wraps around numMatch
+        /// </summary>
+        /// <returns></returns>
         private int LastRandom()
         {
             currentFile--;
@@ -214,182 +256,13 @@ namespace RandImg
             return CurrentIndex();
         }
 
+        /// <summary>
+        /// index of the current file selected
+        /// </summary>
+        /// <returns></returns>
         private int CurrentIndex()
         {
             return randomMap[currentFile];
         }
-
-
-        private class Directory
-        {
-            public string basePath { get; } // absolute path of the directory
-            public readonly int numMatch; // number of matches total
-            private Func<string, bool> isValid; // delegate for whether given file is valid given selection pattern
-            private List<int> fileMatchTree; // holds the number of elements at each folder or directory in specialized postfix notation
-
-            public Directory(string in_basePath, Func<string, bool> in_isValid)
-            {
-                basePath = in_basePath;
-                isValid = in_isValid;
-                fileMatchTree = new List<int>();
-                SetFileMatchTree();
-                numMatch = fileMatchTree.Max<int>();
-            }
-
-            public string GetImgPath(int fileNum)
-            {
-                return GetImgPath(fileNum, basePath, TreeSearch(fileMatchTree, fileNum), 0);
-            }
-
-            /// <summary>
-            /// 
-            /// </summary>
-            /// <param name="fileNum">index of the target file</param>
-            /// <param name="currentPath">path of current directory</param>
-            /// <param name="pathToFile">indicates where to look for file, 0 = current dir, 1+ = internal dirs</param>
-            /// <param name="index">index in pathToFile, depth in tree</param>
-            /// <returns></returns>
-            public string GetImgPath(int fileNum, string currentPath, List<int> pathToFile, int index)
-            {
-                // check for file number too large
-                if (fileNum >= numMatch)
-                {
-                    Debug.Assert(false);
-                    return null;
-                }
-
-                // if file is at this directory level
-                if (pathToFile[index] == 0) 
-                {
-                    for (int i = 0; i < searchRetryMax; i++) // retry #times
-                    {
-                        string[] filePaths = System.IO.Directory.GetFiles(currentPath);
-                        List<string> validPaths = new List<string>();
-                        foreach (string s in filePaths) // filter for valid paths
-                        {
-                            if (isValid(s)) validPaths.Add(s);
-                        }
-                        // check that valid files exist
-                        if (validPaths.Count != 0)
-                        {
-                            return validPaths[fileNum % validPaths.Count];
-                        }
-                    }
-                    string errorMsg = "GetImgPath: could not find specified file";
-                    Debug.Assert(false, errorMsg);
-                    throw new Exception(errorMsg);
-                }
-                // if in directories
-                else if (pathToFile[index] > 0)
-                {
-                    string[] dirPaths = System.IO.Directory.GetDirectories(currentPath);
-                    return GetImgPath(fileNum, dirPaths[pathToFile[index] - 1], pathToFile, index + 1);
-                }
-
-                // path shouldn't be negative
-                Debug.Assert(false);
-                return null;
-            }
-
-            /// <summary>
-            /// Initializes the file match tree for the directory
-            /// </summary>
-            private void SetFileMatchTree()
-            {
-                //try
-                {
-                    SetFileMatchTreeRec(basePath, 0, 0, 0);
-                }
-                //catch
-                //{
-                //    MessageBox.Show("Error in SetFileMatchTree");
-                //    // error handling later?
-                //}
-            }
-
-            /// <summary>
-            /// Recursive helper to set file match tree
-            /// </summary>
-            /// <param name="currentPath">path for this dir</param>
-            /// <param name="treeIndex">index in file match tree of the files of this dir</param>
-            /// <param name="totFiles">total files up to this directory</param>
-            /// <param name="depth">level of the directory in tree, starts at 0</param>
-            private void SetFileMatchTreeRec(string currentPath, int treeIndex, int totFiles, int depth) // returns the number of nodes in path
-            {
-
-                int fileMatch = 0; // files matched in this dir
-                foreach (string s in System.IO.Directory.GetFiles(currentPath))
-                {
-                    if (isValid(s)) fileMatch++;
-                }
-                Debug.Assert(treeIndex == fileMatchTree.Count); // check that next element is where expected
-                fileMatchTree.Add(fileMatch + totFiles); // found files + files up to this point
-                totFiles = fileMatchTree[treeIndex]; // copy into total files, same as totFiles += fileMatch
-
-                int dirTreeIndex = treeIndex + 1; // index of the next directory's root node
-                int lastDirAmount = -1; // total matched files in last directory scanned
-                foreach (string s in System.IO.Directory.GetDirectories(currentPath)) // loop all directories
-                {
-                    Debug.Assert(dirTreeIndex == fileMatchTree.Count); // check that next element is where expected
-                    fileMatchTree.Add(0); // add dummy value to be set later, added at index dirTreeIndex
-                    SetFileMatchTreeRec(s, dirTreeIndex + 1, totFiles, depth + 1); // recursively set downstream tree
-                    int lastTreeIndex = fileMatchTree.Count - 1; // index of current last element
-                    fileMatchTree[dirTreeIndex] = fileMatchTree[lastTreeIndex]; // set parent node to last child value, which is equal to the total num files
-                    totFiles = fileMatchTree[dirTreeIndex]; // update the total files
-                    // directory is empty if the total size with it = total size before it
-                    if (lastDirAmount == fileMatchTree[dirTreeIndex]) // indicates given directory is completely empty
-                    {
-                        fileMatchTree[dirTreeIndex] = -1 * depth; // set to sentinal negative val with info for depth
-                    }
-                    else lastDirAmount = fileMatchTree[dirTreeIndex]; // update last total size
-                    dirTreeIndex = lastTreeIndex + 1; // set next file index to one more than last current index
-                }
-            }
-
-            /// <summary>
-            /// 
-            /// </summary>
-            /// <param name="tree">tree of file match tree</param>
-            /// <param name="target">target value to search for</param>
-            /// <param name="index">current index in the tree list</param>
-            /// <param name="depth">level of the directory in tree, starts at 0</param>
-            /// <returns>list describing how to get to target value</returns>
-            private static List<int> TreeSearch(List<int> tree, int target, int index = 0, int depth = 0)
-            {
-                // check if file is in files of this dir
-                if (target < tree[index] && tree[index] > 0)
-                {
-                    return new List<int> { 0 }; // 0 indicates files in this dir
-                }
-                for (int i = index + 1, dir = 1, threshold = 0; i < tree.Count; i++) // loop through dirs in this dir
-                {
-                    // check if the tree target is in this dir
-                    if (target < tree[i])
-                    {
-                        var retVal = TreeSearch(tree, target, i + 1, depth + 1); // save directions for inside dir
-                        retVal.Insert(0, dir); // front add
-                        return retVal;
-                    }
-                    // check if this dir exceeds the highest value scanned
-                    if (tree[i] > threshold)
-                    {
-                        threshold = tree[i];
-                        dir++;
-                    }
-                    // check if an empty dir at this depth is found
-                    else if (tree[i] != 0 && tree[i] == -1 * depth) // cant be 0, check if inverted depth val
-                    {
-                        dir++;
-                    }
-                    // else just increment i
-                }
-
-                // target not found for some reason
-                Debug.Assert(false);
-                return new List<int> { };
-            }
-
-        }
-
     }
 }
