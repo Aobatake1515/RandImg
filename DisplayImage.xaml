@@ -5,7 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:RandImg"
         mc:Ignorable="d"
-        Title="DisplayImage" Height="auto" Width="auto">
+        Title="DisplayImage" Height="auto" Width="auto" Closing="Window_Closing">
     <Grid Background="Gray">
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="0*"/>

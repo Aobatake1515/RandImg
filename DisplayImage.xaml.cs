@@ -64,7 +64,7 @@ namespace RandImg
         {
             if (e.Key == Key.Escape)
             {
-                CloseFull();
+                Close();
             }
             if (e.Key == Key.Right)
             {
@@ -196,8 +196,12 @@ namespace RandImg
             }
         }
 
-        public void CloseFull()
+
+        private void Window_Closing(object sender, System.ComponentModel.CancelEventArgs e)
         {
+            timer.Enabled = false;
+            timer.Dispose();
+
             image.Source = null;
             imageBack.Source = null;
             UpdateLayout();
@@ -208,8 +212,6 @@ namespace RandImg
                 unminimizeMain();
             }
             catch { }
-
-            Close();
         }
     }
 }
