@@ -86,6 +86,7 @@ namespace RandImg
                 {
                     Rename rename = new Rename(fc.GetCurrentPath(), ResetFiles);
                     rename.Show();
+                    timer.Enabled = false; // pause auto
                 }
                 catch { }
             }
@@ -166,7 +167,6 @@ namespace RandImg
             bitMapImg.UriSource = uri;
             bitMapImg.CacheOption = BitmapCacheOption.OnLoad; // allows file to be released
             bitMapImg.EndInit();
-            bitMapImg.Freeze();
             image.Source = bitMapImg;
             imageBack.Source = bitMapImg;
         }
@@ -176,6 +176,10 @@ namespace RandImg
             try
             {
                 NewImage(new Uri(fc.GetNewPath(direction)));
+            }
+            catch (UriFormatException uri_exc)
+            {
+                Debug.Assert(false, "URI format error: " + uri_exc.Message);
             }
             catch { }
         }

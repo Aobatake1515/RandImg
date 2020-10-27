@@ -9,8 +9,6 @@ namespace RandImg
 {
     public class FileController
     {
-        private const int searchRetryMax = 10;
-
         private readonly string[] acceptableExts = { ".jpg", ".png" }; // acceptable file extensions
         // general pattern: prefix~pattern~restofname.extension
         private const char PATTERN_DIVIDER = '~'; // seperates pattern from rest of name
