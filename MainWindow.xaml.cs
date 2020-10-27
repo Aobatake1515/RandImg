@@ -15,6 +15,7 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
+using Microsoft.WindowsAPICodePack.Dialogs;
 
 
 namespace RandImg
@@ -120,12 +121,25 @@ namespace RandImg
 
         private void DirSelect_Click(object sender, RoutedEventArgs e)
         {
-            // Folder Browser Dialog is pretty awful, should replace later
-            var folderBrowserDialog = new FolderBrowserDialog();
-            var result = folderBrowserDialog.ShowDialog();
-            if (result == System.Windows.Forms.DialogResult.OK)
+            // uses Microsoft.WindowsAPICodePack-Shell
+            var folderPickerDialog = new CommonOpenFileDialog();
+            folderPickerDialog.IsFolderPicker = true;
+            if (settings.basePaths.Count > 0)
             {
-                settings.basePaths.Add(folderBrowserDialog.SelectedPath);
+                folderPickerDialog.InitialDirectory = settings.basePaths.Last<string>();
+            }
+            else
+            {
+                folderPickerDialog.InitialDirectory = Environment.GetFolderPath(Environment.SpecialFolder.UserProfile);
+                if (folderPickerDialog.InitialDirectory.Equals("")) // if somehow userprofile cant be found (idk if this would happen)
+                {
+                    folderPickerDialog.InitialDirectory = PresetsPath(); // default to folder with presets
+                }
+            }
+            var result = folderPickerDialog.ShowDialog();
+            if (result == CommonFileDialogResult.Ok)
+            {
+                settings.basePaths.Add(folderPickerDialog.FileName);
                 RefreshListbox();
             }
         }
