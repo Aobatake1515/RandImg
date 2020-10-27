@@ -9,6 +9,8 @@ namespace RandImg
 {
     public class FileController
     {
+        private const int searchRetryMax = 10;
+
         private readonly string[] acceptableExts = { ".jpg", ".png" }; // acceptable file extensions
         // general pattern: prefix~pattern~restofname.extension
         const char PATTERN_DIVIDER = '~'; // seperates pattern from rest of name
@@ -107,8 +109,9 @@ namespace RandImg
                 }
             }
             // not found somehow
-            Debug.Assert(false);
-            return null;
+            string errorMsg = "GetPath: failed to find path";
+            Debug.Assert(false, errorMsg);
+            throw new Exception(errorMsg);
         }
 
 
@@ -235,15 +238,7 @@ namespace RandImg
 
             public string GetImgPath(int fileNum)
             {
-                //try
-                {
-                    return GetImgPath(fileNum, basePath, TreeSearch(fileMatchTree, fileNum), 0);
-                }
-                //catch (Exception e)
-                //{
-                //    MessageBox.Show("Error in GetImgPath\n" + e.ToString());
-                //    return null;
-                //}
+                return GetImgPath(fileNum, basePath, TreeSearch(fileMatchTree, fileNum), 0);
             }
 
             /// <summary>
@@ -266,19 +261,23 @@ namespace RandImg
                 // if file is at this directory level
                 if (pathToFile[index] == 0) 
                 {
-                    string[] filePaths = System.IO.Directory.GetFiles(currentPath);
-                    List<string> validPaths = new List<string>();
-                    foreach (string s in filePaths) // filter for valid paths
+                    for (int i = 0; i < searchRetryMax; i++) // retry #times
                     {
-                        if (isValid(s)) validPaths.Add(s);
+                        string[] filePaths = System.IO.Directory.GetFiles(currentPath);
+                        List<string> validPaths = new List<string>();
+                        foreach (string s in filePaths) // filter for valid paths
+                        {
+                            if (isValid(s)) validPaths.Add(s);
+                        }
+                        // check that valid files exist
+                        if (validPaths.Count != 0)
+                        {
+                            return validPaths[fileNum % validPaths.Count];
+                        }
                     }
-                    // check that valid files exist
-                    if (validPaths.Count == 0)
-                    {
-                        Debug.Assert(false);
-                        return null;
-                    }
-                    return validPaths[fileNum % validPaths.Count];
+                    string errorMsg = "GetImgPath: could not find specified file";
+                    Debug.Assert(false, errorMsg);
+                    throw new Exception(errorMsg);
                 }
                 // if in directories
                 else if (pathToFile[index] > 0)

@@ -82,8 +82,12 @@ namespace RandImg
             }
             if (e.Key == Key.R)
             {
-                Rename rename = new Rename(fc.GetCurrentPath(), ResetFiles);
-                rename.Show();
+                try
+                {
+                    Rename rename = new Rename(fc.GetCurrentPath(), ResetFiles);
+                    rename.Show();
+                }
+                catch { }
             }
             // toggle border
             if (e.Key == Key.B)
@@ -169,7 +173,11 @@ namespace RandImg
 
         protected void ChooseNew(bool direction)
         {
-            NewImage(new Uri(fc.GetNewPath(direction)));
+            try
+            {
+                NewImage(new Uri(fc.GetNewPath(direction)));
+            }
+            catch { }
         }
 
         private void ResetFiles()
