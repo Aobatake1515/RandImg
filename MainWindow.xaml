@@ -33,6 +33,7 @@
             </Grid>
         </GroupBox>
         <Label x:Name="dirsLbl_Copy2" Content="Search Pattern (or)" HorizontalAlignment="Left" Margin="196,200,0,0" VerticalAlignment="Top" Width="148"/>
+        <Button x:Name="button" Content="?" HorizontalAlignment="Left" Margin="742,10,0,0" VerticalAlignment="Top" Width="22" Click="button_Click"/>
 
     </Grid>
 </Window>

@@ -131,6 +131,11 @@ namespace RandImg
                     FillImage();
                 }
             }
+            if (e.Key == Key.C)
+            {
+                About about = new About();
+                about.Show();
+            }
         }
 
         protected void TimerStart(object Sender, EventArgs e)

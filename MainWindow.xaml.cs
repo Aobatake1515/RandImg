@@ -309,5 +309,11 @@ namespace RandImg
         {
             settings.autoPlay = isAutoCB.IsChecked ?? false; // safe cast from nullable
         }
+
+        private void button_Click(object sender, RoutedEventArgs e)
+        {
+            About about = new About();
+            about.Show();
+        }
     }
 }
