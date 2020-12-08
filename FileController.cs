@@ -188,7 +188,7 @@ namespace RandImg
             }
 
             // sieve for at least one filePattern char in searchPatternOr
-            if (searchPatternAnd != "")
+            if (searchPatternOr != "")
             {
                 bool found = false;
                 foreach (char c in searchPatternOr)
