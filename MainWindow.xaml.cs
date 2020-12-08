@@ -146,8 +146,11 @@ namespace RandImg
 
         private void DirRemove_Click(object sender, RoutedEventArgs e)
         {
-            settings.basePaths.RemoveAt(basePathsLB.SelectedIndex);
-            RefreshListbox();
+            if (basePathsLB.SelectedIndex >= 0 && settings.basePaths.Count > basePathsLB.SelectedIndex)
+            {
+                settings.basePaths.RemoveAt(basePathsLB.SelectedIndex);
+                RefreshListbox();
+            }
         }
 
         private void RefreshListbox()
