@@ -204,8 +204,12 @@ namespace RandImg
 
         private void Window_Closing(object sender, System.ComponentModel.CancelEventArgs e)
         {
-            timer.Enabled = false;
-            timer.Dispose();
+            // will sometimes try to close before timer init
+            if (timer != null)
+            {
+                timer.Enabled = false;
+                timer.Dispose();
+            }
 
             image.Source = null;
             imageBack.Source = null;
